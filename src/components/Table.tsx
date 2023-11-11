@@ -8,29 +8,13 @@ import '../index.css'
 import { Tag } from "primereact/tag";
 import { Button } from "primereact/button";
 import 'primeicons/primeicons.css';
-
-const products = [
-  {"id": "1", "date": "1 ноября вфывфы вфывфы", "importance": "Высокая", "equip": "Вегас","message": "ура","resp": "Иван", "readed": false},
-  {"id": "2", "date": "2 ноября", "importance": "Низкая", "equip": "Вегас","message": "нет","resp": "Иван", "readed": true},
-  {"id": "3", "date": "3 ноября", "importance": "Высокая", "equip": "Вегас","message": "да","resp": "Иван", "readed": false},
-  {"id": "4", "date": "4 ноября", "importance": "Низкая", "equip": "Вегас","message": "ыыы","resp": "Иван", "readed": true},
-  {"id": "5", "date": "5 ноября", "importance": "Высокая", "equip": "Вегас","message": "аваы","resp": "Иван", "readed": true},
-  {"id": "6", "date": "6 ноября", "importance": "Низкая", "equip": "Вегас","message": "ыв","resp": "Иван", "readed": false},
-  {"id": "7", "date": "7 ноября", "importance": "Высокая", "equip": "Вегас","message": "вы","resp": "Иван", "readed": false},
-  {"id": "8", "date": "8 ноября", "importance": "Низкая", "equip": "Вегас","message": "ура","resp": "Иван", "readed": true},
-  {"id": "9", "date": "9 ноября", "importance": "Высокая", "equip": "Вегас","message": "ура","resp": "Иван", "readed": false},
-  {"id": "10", "date": "10 ноября", "importance": "Низкая", "equip": "Вегас","message": "ура","resp": "Иван", "readed": false},
-  {"id": "11", "date": "11 ноября", "importance": "Высокая", "equip": "Вегас","message": "ура","resp": "Иван", "readed": false},
-  {"id": "12", "date": "12 ноября", "importance": "Низкая", "equip": "Вегас","message": "ура","resp": "Иван", "readed": false},
-  {"id": "13", "date": "13 ноября", "importance": "Высокая", "equip": "Вегас","message": "ура","resp": "Иван", "readed": false},
-  {"id": "14", "date": "13 ноября", "importance": "Высокая", "equip": "Вегас","message": "ура","resp": "Иван", "readed": false},
-  {"id": "15", "date": "13 ноября", "importance": "Критическая", "equip": "Вегас","message": "ура","resp": "Иван", "readed": false},
-]
-
+import { RootState, useAppDispatch } from "../store/store";
+import { markAsRead } from "../store/eventReducer";
+import { useSelector } from "react-redux";
 
 export function Table() {
-  const [data, setData] = useState(products)
-
+  const data = useSelector((state: RootState) => state.event.entities);
+  const dispatch = useAppDispatch()
   const [globalFilterValue, setGlobalFilterValue] = useState('');
 
   const [filters, setFilters] = useState({
@@ -74,19 +58,12 @@ const renderHeader = () => {
   }
 
   const actionBodyTemplate = (rowData) => {
-    return rowData.readed === false ? <Button onClick={() => changeReadStatus(rowData)} type="button" icon="pi pi-check-circle"></Button> : ''
+    return rowData.readed === false ? <Button onClick={() => changeReadStatus(rowData)} type="button" icon="pi pi-check-circle"></Button> : <div></div>
   }
 
 
   function changeReadStatus(rowData){
-    console.log(rowData.id)
-    const updatedData = data.map(item => {
-      if (item.id === rowData.id) {
-        return { ...item, readed: true };
-      }
-      return item;
-    });
-    setData(updatedData);
+    dispatch(markAsRead(rowData.id ));
   }
 
   const rowClass = (rowData) => {

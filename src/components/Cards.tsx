@@ -4,6 +4,9 @@ import { Paginator } from 'primereact/paginator';
 import { Avatar } from 'primereact/avatar';
 import { Tag } from 'primereact/tag'
 import { Badge } from 'primereact/badge'
+import { useSelector } from 'react-redux';
+import { RootState, useAppDispatch } from '../store/store';
+import { markAsRead } from '../store/eventReducer';
 
 
 const statusBodyTemplate = (rowData) => {
@@ -14,40 +17,25 @@ const cardTitle = (c) => {
   return c.readed === false ?<Badge style={{position: 'absolute'}} value="Новое"></Badge>: <div></div>
 }
 
-const items = [
-  {"id": "1000", "date": "10.12.2022 10:00:14", "importance": "Высокая", "equip": "Вегас","message": "ура","resp": "Иван", "readed": false},
-  {"id": "1000", "date": "2 ноября", "importance": "Низкая", "equip": "Вегас","message": "нет","resp": "Иван", "readed": true},
-  {"id": "1000", "date": "3 ноября", "importance": "Высокая", "equip": "Вегас","message": "да","resp": "Иван", "readed": false},
-  {"id": "1000", "date": "4 ноября", "importance": "Низкая", "equip": "Вегас","message": "ыыы","resp": "Иван", "readed": true},
-  {"id": "1000", "date": "4 ноября", "importance": "Низкая", "equip": "Вегас","message": "ыыы","resp": "Иван", "readed": true},
-  {"id": "1000", "date": "2 ноября", "importance": "Низкая", "equip": "Вегас","message": "нет","resp": "Иван", "readed": true},
-  {"id": "1000", "date": "3 ноября", "importance": "Высокая", "equip": "Вегас","message": "да","resp": "Иван", "readed": false},
-  {"id": "1000", "date": "4 ноября", "importance": "Низкая", "equip": "Вегас","message": "ыыы","resp": "Иван", "readed": true},
-  {"id": "1000", "date": "4 ноября", "importance": "Низкая", "equip": "Вегас","message": "ыыы","resp": "Иван", "readed": true},
-]
 
 export const Cards = () => {
-  const [data, setData] = useState(items)
+  const data = useSelector((state: RootState)=> state.event.entities);
+  const dispatch = useAppDispatch()
 
   const [first, setFirst] = useState(0);
   const itemsPerPage = 8;
 
   const onPageChange = (event) => {
     setFirst(event.first);
-
   };
-
 
   const cardRefs = useRef([]);
 
-
-
-  const handleKeyDown = (event, index) => {
+  const handleKeyDown = (event, index, item) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      const updatedData = [...data];
-      updatedData[index] = { ...updatedData[index], readed: true };
-      setData(updatedData);
+      dispatch(markAsRead(item.id ));
+
     }
     if (event.key === 'ArrowRight') {
       const nextIndex = index + 1 < itemsPerPage ? index + 1 : 0;
@@ -104,9 +92,7 @@ export const Cards = () => {
         {renderItems()}
       </div>
 
-      <Paginator first={first} rows={itemsPerPage} totalRecords={items.length} onPageChange={onPageChange} />
+      <Paginator first={first} rows={itemsPerPage} totalRecords={data.length} onPageChange={onPageChange} />
     </div>
   );
 };
-
-
